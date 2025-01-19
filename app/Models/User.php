@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
 
 class User extends Authenticatable
 {
@@ -20,8 +18,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'username',
-        'password',
+        'nik', // Gunakan NIK untuk login
     ];
 
     /**
@@ -30,16 +27,20 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
     /**
-     * The attributes that should be cast.
+     * Custom authentication function.
      *
-     * @var array<string, string>
+     * @param string $name
+     * @param string $nik
+     * @return User|null
      */
-    protected $casts = [
-        'username_verified_at' => 'datetime',
-    ];
+    public static function authenticate($name, $nik)
+    {
+        return self::where('name', $name)
+                   ->where('nik', $nik)
+                   ->first();
+    }
 }

@@ -9,7 +9,7 @@
                 @if(Auth::check())
                     <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
                 @else
-                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">Guest</span>
+                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">Login</span>
                 @endif
                 <img class="img-profile rounded-circle" src="{{ asset('img/undraw_profile.svg') }}">
             </a>

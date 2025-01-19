@@ -2,28 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Anak;
+use App\Models\Almarhum;
 use App\Models\User;
-use App\Models\Kunjungan;
+use App\Models\Pelapor;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Hitung jumlah data dari database
-        $anakCount = Anak::count();
+        // Hitung jumlah data dari model yang relevan
+        $almarhumCount = Almarhum::count();
         $userCount = User::count();
-        $kunjunganCount = Kunjungan::count();
+        $pelaporCount = Pelapor::count();
 
-        // Kirim data ke view menggunakan compact()
-        return view('dashboard', compact('anakCount', 'userCount', 'kunjunganCount'));
+        // Kirim data ke view menggunakan compact
+        return view('dashboard', compact('almarhumCount', 'userCount', 'pelaporCount'));
     }
 }
-
-    
-    
-
-
-
-
-

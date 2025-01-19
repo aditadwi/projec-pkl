@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -14,32 +15,44 @@ class LoginController extends Controller
     {
         return view('login');
     }
-    public function authenticate(Request $request):RedirectResponse
+
+    public function authenticate(Request $request)
     {
+        // Validasi input
         $credentials = $request->validate([
-            'username' => ['required'],
-            'password' => ['required'],
+            'name' => ['required'],
+            'nik' => ['required', 'numeric'],
         ]);
-
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+    
+        // Cek manual user berdasarkan name dan nik
+        $user = User::where('name', $credentials['name'])
+                    ->where('nik', $credentials['nik'])
+                    ->first();
+    
+        if ($user) {
+            // Login user secara manual tanpa password
+            Auth::login($user);
+    
+            // Redirect jika berhasil login
+            return redirect()->intended('dashboard');
         }
-
-        return back()->with('loginError','Login Failed');
+    
+        // Jika login gagal, kembali ke halaman login dengan error
+        return back()->withErrors([
+            'login' => 'Nama atau NIK tidak cocok.',
+        ]);
     }
-
-    public function logout(Request $request):RedirectResponse
+    
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/login');
     }
+
     public function loginView()
     {
         return view('login'); // Example view file
     }
-
 }
-

@@ -1,7 +1,5 @@
-@extends('layouts.layout')  <!-- Extends the layout.blade.php -->
-
-@section('title', 'Dashboard')  <!-- Sets the page title -->
-
+@extends('layouts.layout')  
+@section('title', 'Dashboard')  
 @section('content')
 <!-- Page Heading -->
 <h1 class="h3 mb-2 text-gray-800">Tables Data User</h1>
@@ -10,7 +8,7 @@
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Data Table</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Data Petugas</h6>
         <a type="button" class="btn btn-primary float-right" href="{{ route('user.create') }}">
             <i class="fas fa-plus"></i> Tambah Petugas
         </a>
@@ -23,8 +21,7 @@
                     <tr>
                         <th>No</th>
                         <th>Name</th>
-                        <th>Username</th>
-                        <th>Role</th>
+                        <th>NIK</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,8 +29,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $dt->name }}</td>
-                        <td>{{ $dt->username }}</td>
-                        <td>{{ $dt->role }}</td>
+                        <td>{{ $dt->nik }}</td>
                     </tr>
                     @endforeach
                 </tbody>

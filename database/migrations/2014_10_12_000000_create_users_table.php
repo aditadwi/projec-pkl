@@ -16,10 +16,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('username')->unique();
-            $table->timestamp('username_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('role',['operator','admin'])->default('operator');
+            $table->string('nik', 16)->unique(); // NIK harus unik
             $table->rememberToken();
             $table->timestamps();
         });

@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\AnakController;
+use App\Http\Controllers\AlmarhumController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\KunjunganController;
+use App\Http\Controllers\PelaporController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
 
@@ -12,22 +12,6 @@ Route::get('/pengukuran', function () {
     return view('pengukuran'); // Tampilkan form
 });
 
-Route::post('/pengukuran', function (Request $request) {
-    // Ambil data dari form
-    $jenis_kelamin = $request->input('jenis_kelamin');
-    $tinggi = $request->input('tinggi');
-    $umur = $request->input('umur');
-
-    // Logika kategori tinggi badan
-    if ($umur <= 24) {
-        $kategori = ($tinggi >= 75) ? "Normal" : "Stunting";
-    } else {
-        $kategori = ($tinggi >= 85) ? "Normal" : "Stunting";
-    }
-
-    // Kirim hasil ke view
-    return view('pengukuran', compact('jenis_kelamin', 'tinggi', 'umur', 'kategori'));
-});
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -40,66 +24,45 @@ Route::post('/pengukuran', function (Request $request) {
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
-
-   Route::get('contac.php', function () {
-    return view('contac',[
-    "title"=>"contac"
-    ]);
-   });
-
-//    Route::get('cek.php', function () {
-//     return view('cek',[
-//     "title"=>"cek"
-//     ]);
-//    });
-   Route::get('grafik.php', function () {
-    return view('grafik',[
-    "title"=>"grafik"
-    ]);
-   });
-
-   
-
-Route::middleware('auth')->get('/dashboard', function () {
+Route::get('/dashboard', function () {
     return view('dashboard');
-})->name('dashboard');
+})->middleware('auth');
 
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+// Route untuk menampilkan semua pelapor
+Route::get('/pelapor', [PelaPorController::class, 'index'])->name('pelapor.index')->middleware('auth');
 
-// Route untuk menampilkan semua kunjungan
-Route::get('/kunjungan', [KunjunganController::class, 'index'])->name('kunjungan.index');
+// Route untuk menampilkan form tambah data pelapor
+Route::get('/pelapor/create', [PelaporController::class, 'create'])->name('pelapor.create');
+Route::get('/pelapor/{id}/edit', [PelaporController::class, 'edit'])->name('pelapor.edit');
+Route::put('/pelapor/{id}', [PelaporController::class, 'update'])->name('pelapor.update');
 
-// Route untuk menampilkan form tambah data kunjungan
-Route::get('/kunjungan/create', [KunjunganController::class, 'create'])->name('kunjungan.create');
+// Route untuk menyimpan data pelapor
+Route::post('/pelapor/store', [PelaporController::class, 'store'])->name('pelapor.store');
 
-// Route untuk menyimpan data kunjungan
-Route::post('/kunjungan/store', [KunjunganController::class, 'store'])->name('kunjungan.store');
+// Route untuk menghapus data pelapor
+Route::delete('/pelapor/{id}', [PelaporController::class, 'destroy'])->name('pelapor.destroy')->middleware('auth');
+Route::get('/pelapor/{id}', [PelaporController::class, 'show'])->name('pelapor.show')->middleware('auth');
 
-// Route untuk menghapus data kunjungan
-Route::delete('/kunjungan/{id}', [KunjunganController::class, 'destroy'])->name('kunjungan.destroy');
-Route::get('/kunjungan/{id}', [KunjunganController::class, 'show'])->name('kunjungan.show');
+Route::resource('/almarhum', AlmarhumController::class)->except('destroy', 'create', 'show', 'update' . 'edit')->middleware('auth');
+Route::get('/almarhum/create', [AlmarhumController::class, 'create'])->name('almarhum.create')->middleware('auth');
+Route::post('/almarhum/store', [AlmarhumController::class, 'store'])->name('almarhum.store')->middleware('auth');
+Route::get('/almarhum/{id}', [AlmarhumController::class, 'show'])->name('almarhum.show')->middleware('auth');
 
+Route::delete('/almarhum/{id}', [almarhumController::class, 'destroy'])->name('almarhum.destroy')->middleware('auth');
+Route::get('/almarhum/pdf/{id}', [almarhumController::class, 'printPDF'])->name('almarhum.pdf')->middleware('auth');
+Route::get('/cetak-almarhum', [almarhumController::class, 'cetak'])->withoutMiddleware('auth');
+Route::get('/cetak-semua-almarhum', [almarhumController::class, 'cetakSemua'])->name('almarhum.semua')->middleware('auth');
 
-
-Route::resource('/anak',AnakController::class)->except('destroy','create','show','update'.'edit');
-Route::get('/anak/create', [AnakController::class, 'create'])->name('anak.create');
-Route::post('/anak/store', [AnakController::class, 'store'])->name('anak.store');
-
-
-Route::get('/anak/{id}', [AnakController::class, 'show'])->name('anak.show');
-Route::delete('/anak/{id}', [AnakController::class, 'destroy'])->name('anak.destroy');
-Route::get('/anak/pdf/{id}', [AnakController::class, 'printPDF'])->name('anak.pdf');
-
-Route::resource('/user',UserController::class);
-Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+Route::resource('/user', UserController::class)->middleware('auth');
+Route::get('/user/create', [UserController::class, 'create'])->name('user.create')->middleware('auth');
 Route::get('/users', [UserController::class, 'index'])->name('user.index')->middleware('auth');
+Route::get('/laporan', [UserController::class, 'laporan'])->name('laporan.index')->middleware('auth');
 
-
-Route::get('login',[LoginController::class,'loginView'])->name('login');
-Route::post('login',[LoginController::class,'authenticate']);
+Route::get('login', [LoginController::class, 'loginView'])->name('login');
+Route::post('login', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-// Route::post('/logout',[LoginController::class,'logout'])->name('auth.logout');
